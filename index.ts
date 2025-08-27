@@ -1,4 +1,5 @@
 import {Agent, run, Tool} from '@openai/agents';
+import {aisdk} from '@openai/agents-extensions';
 
 import {
   generateScreenshotTool,
@@ -15,6 +16,13 @@ import {
   prepareDummyDataForForm,
 } from './tools';
 import { printJson } from './utils';
+import { google } from '@ai-sdk/google';
+import { openai } from '@ai-sdk/openai';
+
+const models = {
+  gemini_flash_2: aisdk(google('gemini-2.0-flash')),
+  gpt_4o: aisdk(openai('gpt-4o-mini')),
+};
 
 
 const tools: Tool[] = [
@@ -30,24 +38,9 @@ const tools: Tool[] = [
 
 const websiteAutomationAgent = new Agent({
   name: 'Website Automation Agent',
-  model: 'gpt-4.1-nano',
+  model: models.gemini_flash_2,
   tools,
-  instructions: `
-  
-  You are a helpful assistant.
-  Who can help user to automate the tasks on the websites.
-
-  You have access to the following tools:
-  ${tools.map((tool) => tool.name).join(', ')}
-
-
-
-  If the user asking to fill the form then use findFormTool to find the form on the page.
-  Use the following tools to find the form and fill it:
-  findFormAndInputs
-  prepareDummyDataForForm
-  fillForm
-  `,
+  // instructions: ``,
 });
 
 const main = async () => {
@@ -58,19 +51,10 @@ const main = async () => {
     'Open https://ui.chaicode.com/auth-sada/signup and fill the form .'
   );
 
-  printJson(result.history);
+  // printJson(result.history);
 
   
   console.log(result.finalOutput);
-
-
-  // const {sessionId} = await openWebpage(
-  //   'https://ui.chaicode.com/auth-sada/signup'
-  // );
-  // const form = await findFormAndInputs(sessionId);
-  // const dummyData = prepareDummyDataForForm(form.inputDetails);
-  // console.log('🚀 ~ main ~ form:', dummyData);
-  // fillForm(sessionId, dummyData);
 };
 
 main();

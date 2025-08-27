@@ -245,6 +245,7 @@ export const prepareDummyDataForFormTool = tool({
     console.log(
       `Inside prepareDummyDataForFormTool with inputDetails: ${inputDetails}`
     );
+    return prepareDummyDataForForm(inputDetails)
   },
 });
 
